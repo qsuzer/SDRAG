@@ -1,4 +1,4 @@
-# Prompts for GSub Pipeline
+# Prompts for SDRAG Pipeline
 
 DECOMPOSE_PROMPT = """You are an expert at breaking down complex questions into simpler sub-questions.
 For the given complex question, decompose it into no more than 3 sub-questions that:

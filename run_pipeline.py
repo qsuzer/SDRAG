@@ -36,7 +36,7 @@ PIPELINE_MAP = {
 }
 
 def main():
-    parser = argparse.ArgumentParser(description="Run GSub-RAG Pipelines")
+    parser = argparse.ArgumentParser(description="Run SDRAG pipelines")
     parser.add_argument("--pipeline", type=str, required=True, choices=PIPELINE_MAP.keys(), help="Pipeline to run")
     parser.add_argument("--config", type=str, default="config/basic_config.yaml", help="Path to config file")
     parser.add_argument("--dataset", type=str, help="Dataset name (overrides config)")

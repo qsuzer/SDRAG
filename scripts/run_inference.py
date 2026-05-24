@@ -6,7 +6,7 @@ from flashrag.utils import get_dataset
 
 # Add src to path to import custom pipeline
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
-from pipeline.gsub_pipeline import GraphBasedReasoningPipeline
+from pipeline.subgraph_pipeline import SubGraphPipeline
 
 def main():
     parser = argparse.ArgumentParser()
@@ -22,7 +22,7 @@ def main():
     config_dict = {
         "gpu_id": args.gpu_id,
         "dataset_name": args.dataset_name,
-        "save_note": f"gsub_{args.context_strategy}"
+        "save_note": f"sdrag_{args.context_strategy}"
     }
     
     if os.path.exists(args.config_path):
@@ -37,10 +37,10 @@ def main():
     test_data = all_split[args.split]
 
     # Initialize Pipeline
-    pipeline = GraphBasedReasoningPipeline(config, context_strategy=args.context_strategy)
+    pipeline = SubGraphPipeline(config)
 
     # Run
-    print(f"Running GSub-RAG on {args.dataset_name} ({args.split})...")
+    print(f"Running SDRAG on {args.dataset_name} ({args.split})...")
     result = pipeline.run(test_data)
     
     print("Done!")

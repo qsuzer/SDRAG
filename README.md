@@ -1,103 +1,113 @@
-# SubDepRAG: Sub-question Dependency-Aware Retrieval-Augmented Generation for Multi-hop Question Answering
+# SDRAG: Sub-question Dependency Reasoning for RAG
 
-This repository contains the reproduction code for the SubDepRAG project and various baseline RAG pipelines. It implements a graph-based reasoning pipeline for Retrieval-Augmented Generation (RAG), allowing for dynamic decomposition, dependency analysis, and pruning of sub-questions.
+This repository contains the reproduction code for the SDRAG project and several baseline Retrieval-Augmented Generation (RAG) pipelines. SDRAG models multi-hop reasoning as a graph of sub-questions, analyzes dependencies among them, prunes unnecessary leaf nodes, and then executes the remaining reasoning path.
 
 ![Model Framework](framework.pdf)
 
 ## Features
 
-*   **Graph-Based Reasoning**: Models the reasoning process as a directed graph of sub-questions.
-*   **Dynamic Pruning**: Automatically removes irrelevant sub-questions to reduce noise.
-*   **Multiple Baselines**: Includes implementations of standard RAG, IRCoT, GenGround, PERQA, and DualRAG for comparison.
-*   **Integrated Pipeline**: Built on top of `FlashRAG` for efficient inference.
+* **Graph-based reasoning**: Models the reasoning process as a directed graph of sub-questions.
+* **Dependency analysis**: Builds explicit dependency edges between sub-questions.
+* **Dynamic pruning**: Removes irrelevant sub-questions to reduce noise.
+* **Multiple baselines**: Includes standard RAG, IRCoT, GenGround, PERQA, and DualRAG.
+* **Fine-tuning utilities**: Includes SDRAG data preparation and LoRA experiment scripts.
 
 ## Installation
 
-1.  Clone this repository.
-2.  Install dependencies:
+1. Clone this repository.
+2. Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-**Note**: You need to have `FlashRAG` tookit installed.
-```bash
-pip install flashrag[full]
-```
+**Note**: You need to have `FlashRAG` installed.
+
+- [FlashRAG](https://github.com/RUC-NLPIR/FlashRAG)
 
 ## Project Structure
 
-```
-SubDepRAGRAG-Reproduce/
-├── src/
-│   ├── pipeline/
-│   │   ├── __init__.py
-│   │   ├── base_pipeline.py      # Base classes and shared logic
-│   │   ├── subgraph_pipeline.py  # SubDepRAG (Graph-Based) implementation
-│   │   ├── ircot_pipeline.py     # IRCoT implementation
-│   │   ├── genground_pipeline.py # GenGround implementation
-│   │   ├── perqa_pipeline.py     # PERQA implementation
-│   │   ├── dualrag_pipeline.py   # DualRAG implementation
-│   │   ├── rag_pipeline.py       # Standard RAG
-│   │   ├── direct_pipeline.py    # Direct LLM (Zero-shot)
-│   │   └── prompts.py            # Shared prompts
-│   └── data/
-│       └── ...
-├── config/
-│   └── basic_config.yaml         # Template configuration file
-├── run_pipeline.py               # Main entry point for running pipelines
-└── requirements.txt
+```text
+SDRAG/
+|-- src/
+|   |-- pipeline/
+|   |   |-- base_pipeline.py
+|   |   |-- subgraph_pipeline.py
+|   |   |-- ircot_pipeline.py
+|   |   |-- genground_pipeline.py
+|   |   |-- perqa_pipeline.py
+|   |   |-- dualrag_pipeline.py
+|   |   |-- rag_pipeline.py
+|   |   |-- direct_pipeline.py
+|   |   `-- prompts.py
+|   `-- data/
+|-- config/
+|   `-- basic_config.yaml
+|-- scripts/
+|   |-- run_inference.py
+|   `-- finetune/
+|-- run_pipeline.py
+`-- requirements.txt
 ```
 
 ## Supported Pipelines
 
 This repository supports the following pipelines:
 
-*   **`subgraph`**: The main SubDepRAG pipeline with graph-based reasoning.
-*   **`ircot`**: Interleaving Retrieval with Chain-of-Thought (Iterative retrieval).
-*   **`genground`**: Generate-and-Ground (Iterative generation with verification).
-*   **`perqa`**: Planner-Executor-Reasoner architecture.
-*   **`dualrag`**: Dual-view RAG (Context-aware and Answer-aware).
-*   **`rag`**: Standard Retrieve-then-Generate.
-*   **`direct`**: Direct LLM generation (Zero-shot).
+* **`subgraph`**: SDRAG graph-based reasoning.
+* **`ircot`**: Interleaving Retrieval with Chain-of-Thought.
+* **`genground`**: Generate-and-Ground.
+* **`perqa`**: Planner-Executor-Reasoner architecture.
+* **`dualrag`**: Dual-view RAG.
+* **`rag`**: Standard retrieve-then-generate.
+* **`direct`**: Direct LLM generation.
 
 ## Usage
 
-You can run any of the supported pipelines using the `run_pipeline.py` script.
-
-### Basic Usage
+Run any supported pipeline with `run_pipeline.py`.
 
 ```bash
 python run_pipeline.py --pipeline <pipeline_name> --dataset <dataset_name>
 ```
 
-### Examples
+Run SDRAG with the default config:
 
-**Run the SubDepRAG (Subgraph) pipeline:**
 ```bash
 python run_pipeline.py --pipeline subgraph --config config/basic_config.yaml
 ```
 
-**Run the IRCoT pipeline on HotpotQA:**
+Run IRCoT on HotpotQA:
+
 ```bash
 python run_pipeline.py --pipeline ircot --dataset hotpotqa --split dev
 ```
 
-**Run Standard RAG:**
+Run standard RAG:
+
 ```bash
 python run_pipeline.py --pipeline rag --dataset hotpotqa
 ```
 
-### Configuration
+## Configuration
 
-The configuration is managed via YAML files (e.g., `config/basic_config.yaml`). You can override specific settings via command-line arguments:
+Configuration is managed via YAML files such as `config/basic_config.yaml`. You can override common settings through command-line arguments:
 
-*   `--dataset`: Override the dataset name.
-*   `--split`: Override the dataset split (e.g., `dev`, `test`).
-*   `--gpu_id`: Specify GPU IDs.
-*   `--test_sample_num`: Limit the number of samples for testing.
+* `--dataset`: Override the dataset name.
+* `--split`: Override the dataset split.
+* `--gpu_id`: Specify GPU IDs.
+* `--test_sample_num`: Limit the number of samples.
 
-## Data Generation (Optional)
+## Fine-tuning
 
-If you want to fine-tune your own model to perform decomposition and dependency analysis, you can use the scripts in `src/data/` to generate training data using a strong teacher model (e.g., GPT-4).
+Fine-tuning scripts are under `scripts/finetune/`. They include:
 
+* `prepare_sdrag_training_data.py`: Build augmented and balanced SDRAG training data.
+* `split_single_task_data.py`: Split mixed data into decomposition, dependency, and pruning subsets.
+* `run_multitask_lora.sh`: Run multitask LoRA experiments with ms-swift.
+* `run_single_task_lora_sweep.sh`: Run task-specific LoRA sweeps.
+* `resolve_swift_best_checkpoint.py`: Parse Swift logs and locate the best checkpoint.
+* `merge_lora_checkpoint.py`: Merge a PEFT LoRA adapter into a base model.
+
+The scripts use environment variables and command-line arguments for local paths and credentials, so no private machine paths are required in the released code.
+
+The seed data for fine-tuning is derived from the **PER-PSE** dataset: [https://huggingface.co/datasets/GenIRAG/PER-PSE](https://huggingface.co/datasets/GenIRAG/PER-PSE)

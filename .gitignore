@@ -18,6 +18,10 @@ dataset/
 indexes/
 logs/
 *.log
+runs/
+wandb/
+*.safetensors
+checkpoint-*/
 
 # Mac
 .DS_Store
