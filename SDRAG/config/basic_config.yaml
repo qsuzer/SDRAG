@@ -1,0 +1,36 @@
+# ------------------------------------------------Global Paths------------------------------------------------#
+model2path:
+  e5: "intfloat/e5-base-v2"
+  llama2-7B-chat: "meta-llama/Llama-2-7b-chat-hf"
+  llama3-8B-instruct: "meta-llama/Meta-Llama-3-8B-Instruct"
+
+model2pooling:
+  e5: "mean"
+
+method2index:
+  e5: "indexes/e5_flat.index"
+
+# ------------------------------------------------Environment Settings------------------------------------------------#
+data_dir: "dataset/"
+save_dir: "output/"
+
+gpu_id: "0"
+dataset_name: "hotpotqa"
+split: ["dev"]
+
+test_sample_num: 10
+random_sample: False
+seed: 42
+
+save_intermediate_data: True
+
+# ------------------------------------------------Retrieval Settings------------------------------------------------#
+retrieval_method: "e5"
+topk: 5
+
+# ------------------------------------------------Generator Settings------------------------------------------------#
+generator_model: "llama3-8B-instruct"
+generation_params:
+  max_new_tokens: 100
+  temperature: 0.1
+  top_p: 0.9

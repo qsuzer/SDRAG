@@ -1,0 +1,14 @@
+model2path:
+  llama2-7b-chat: "meta-llama/Llama-2-7b-chat-hf"
+  # Add your fine-tuned model path here
+  sdrag-llama: "path/to/your/finetuned/model"
+
+generator_model: "sdrag-llama"
+retrieval_method: "e5"
+index_path: "path/to/index"
+corpus_path: "path/to/corpus"
+
+# Generation Config
+max_new_tokens: 512
+temperature: 0.0
+top_p: 1.0

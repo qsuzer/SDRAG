@@ -1,0 +1,7 @@
+flashrag>=0.1.0
+ms-swift>=2.0.0
+openai
+networkx
+tqdm
+pandas
+numpy
